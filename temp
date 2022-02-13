@@ -1,0 +1,37 @@
+create table big_temp (
+colleges_new_id,colleges_new_name,colleges_new_city,colleges_new_state,colleges_new_distance,colleges_new_disqualified_reason,colleges_new_notes,
+colleges_id,colleges_name,colleges_costs_ids,colleges_costs,colleges_city,colleges_state,colleges_distance_miles,colleges_enroll_ids,colleges_enroll_values,colleges_acceptance_ids,colleges_acceptance_pcts,colleges_disqualified_reasons,colleges_searche_ids,colleges_attributes,colleges_notes,colleges_usn_rank_ids,colleges_usn_ranks,colleges_website,
+cost_and_site4_id,cost_and_site4_college_name,cost_and_site4_price,cost_and_site4_website_id,
+websites_id,websites_url
+)
+as
+SELECT 
+	colleges_new.*, colleges.*, cost_and_site4.*, websites.*
+FROM colleges_new --359
+full outer join colleges
+on colleges_new.name = colleges.name --359
+left outer join cost_and_site4
+on cost_and_site4.college_name = colleges_new.name
+full outer join websites
+on cost_and_site4.website_id = websites.id
+order by colleges_new.name
+
+drop table big_temp
+
+SELECT array_agg(table_name || '_' || column_name)
+  FROM information_schema.columns
+ WHERE table_schema = 'public'
+   AND table_name   in ('colleges_new', 'colleges', 'cost_and_site4', 'websites')
+group by table_name
+order by table_name
+
+full outer join colleges_new t2
+on t2.name = t5.name
+full outer join cost_and_site6 t1
+on t1.college_id = t2.id
+full outer join costs2 t3
+on t3.website_id = t1.website_id
+and t3.cost = t1.price::money
+full outer join websites t4
+on t1.website_id = t4.id
+order by t2.id

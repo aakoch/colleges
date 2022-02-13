@@ -1,0 +1,143 @@
+create table websites 
+as
+SELECT (row_number() over())::int id, t1.url
+-- colleges_id, colleges_name, colleges_costs_ids, colleges_costs, colleges_city, colleges_state, colleges_distance_miles, colleges_enroll_ids, colleges_enroll_values, colleges_acceptance_ids, colleges_acceptance_pcts, colleges_disqualified_reasons, colleges_searche_ids, colleges_attributes, colleges_notes, colleges_usn_rank_ids, colleges_usn_ranks, colleges_website, colleges_new_id, colleges_new_name, colleges_new_city, colleges_new_state, colleges_new_distance, colleges_new_disqualified_reason, colleges_new_notes, cost_and_site4_id, cost_and_site4_college_name, cost_and_site4_price, cost_and_site4_website_id, websites_id, websites_url
+FROM (select distinct websites_url url
+	  from big_temp
+	where websites_url is not null) t1
+	
+	
+create sequence websites_id_seq;
+select setval('websites_id_seq', 
+    (select id from websites order by 1 desc limit 1));
+alter table websites alter id set not null; -- not necessary
+alter table websites alter id set default 
+    nextval('websites_id_seq'::regclass);
+	
+create table colleges 
+as
+SELECT (row_number() over())::int id, t1.colleges_new_name name, t1.colleges_new_city city, t1.colleges_new_state state, t1.colleges_new_distance distance, t1.colleges_new_disqualified_reason disqualified_reason, t1.colleges_new_notes notes
+FROM (
+	select distinct colleges_new_name, colleges_new_city, colleges_new_state, colleges_new_distance, colleges_new_disqualified_reason, colleges_new_notes
+	from big_temp
+	order by colleges_new_name
+	) t1
+	
+create sequence colleges_id_seq;
+select setval('colleges_id_seq', 
+    (select id from colleges order by 1 desc limit 1));
+alter table colleges alter id set not null; -- not necessary
+alter table colleges alter id set default 
+    nextval('colleges_id_seq'::regclass);
+	
+select * from big_temp where colleges_new_name = 'University of Nebraska - Omaha'
+
+
+	
+create table website_costs 
+as
+SELECT (row_number() over())::int id, t1.cost_and_site4_price::money cost, t1.website_id
+FROM (
+	select distinct big_temp.cost_and_site4_price::money, --colleges.name, colleges.id colleges_id, 
+	
+ 	case big_temp.cost_and_site4_website_id 
+	WHEN 1 then 14
+	WHEN 3 then 4
+	WHEN 4 then 13
+ 	WHEN 8 THEN 10
+ 	WHEN 9 THEN 17
+ 	WHEN 10 THEN 5
+ 	WHEN 17 THEN 6
+ 	else 0
+ 	end website_id
+	
+	from big_temp
+	inner join colleges
+	on colleges.name = big_temp.colleges_new_name
+	where cost_and_site4_price is not null
+	order by big_temp.cost_and_site4_price::money
+-- 	order by colleges.name
+	) t1
+	
+
+with t2 as (
+select 
+)
+create table costs 
+as
+SELECT (row_number() over())::int id, t1.colleges_id, t1.cost_id
+FROM (
+	select distinct 
+		colleges.id colleges_id,
+		t2.id cost_id
+	from colleges
+	inner join website_costs
+		on colleges.id = big_temp.cost_and_site4_price::money
+	) t1
+	
+select colleges.id colleges_id, unnest(big_temp.colleges_costs) cost, websites.id website_id --big_temp.websites_url --, big_temp.*
+from big_temp
+full outer join colleges
+on colleges.name = big_temp.colleges_new_name
+full outer join websites
+on websites.url = big_temp.websites_url
+
+
+with t1 as (
+	select big_temp.colleges_new_name, unnest(big_temp.colleges_costs) big_temp_cost, big_temp.websites_url, colleges.*, websites.* --, website_costs.id website_costs_id, website_costs.cost website_costs_cost
+	from big_temp
+	full outer join colleges
+	on colleges.name = big_temp.colleges_new_name
+	left join websites
+	on websites.url = big_temp.websites_url
+)
+select t1.*, website_costs.*, websites.*
+from t1
+left join website_costs
+on t1.big_temp_cost::money = website_costs.cost
+inner join websites
+on websites.id = website_costs.website_id
+and t1.websites_url = websites.url
+order by t1.colleges_new_name
+	
+	
+create table costs 
+as
+SELECT (row_number() over())::int id, t3.*
+FROM (
+with t1 as (
+select colleges.id colleges_id2, colleges.*, big_temp.* --, unnest(big_temp.colleges_costs) big_temp_cost
+from colleges
+left join big_temp
+on colleges.name = big_temp.colleges_new_name
+left join websites
+on websites.url = big_temp.websites_url
+)
+select t1.colleges_id2 college_id, website_costs.id cost_id--, websites.id website_id
+from t1
+left join website_costs
+on t1.cost_and_site4_price::money = website_costs.cost
+inner join websites
+on websites.id = website_costs.website_id
+and t1.websites_url = websites.url
+where websites_id is not null
+order by t1.colleges_new_name
+) t3
+
+
+create sequence costs_id_seq;
+select setval('costs_id_seq', 
+    (select id from costs order by 1 desc limit 1));
+alter table costs alter id set not null; -- not necessary
+alter table costs alter id set default 
+    nextval('costs'::regclass);
+	
+select colleges.*, website_costs.cost, websites.url
+from colleges 
+left join costs
+on colleges.id = costs.college_id
+left join website_costs
+on costs.cost_id = website_costs.id
+left join websites
+on websites.id = website_costs.website_id
+	
