@@ -4,7 +4,8 @@
   "description": "College search",
   "main": "src/index.js",
   "scripts": {
-    "test": "c8 tap --no-coverage"
+    "test": "c8 tap --no-coverage",
+    "server": "node src/index.js"
   },
   "repository": {
     "type": "git",

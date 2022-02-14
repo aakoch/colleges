@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import CollegeLocation from './CollegeLocation';
 
 class College extends Component {
   doSomething() {
@@ -8,12 +9,7 @@ class College extends Component {
     return (
       <div>
         <div className="college-name"><a onClick={this.doSomething}>{this.props.data.name}</a></div>
-        <div>is located
-          {this.props.data.city
-            ? <span> in { this.props.data.city }, { this.props.data.state }</span>
-            : <span> <em>somewhere</em></span>
-          }
-        </div>
+        <CollegeLocation data={{city: this.props.data.city, state: this.props.data.state, distance: this.props.data.distance}} />
       </div>
     )
   }

@@ -1,6 +1,6 @@
 import React from "react";
 import './App.css';
-import College from "./College";
+import College from "./components/College";
 
 class App extends React.Component {
 
@@ -25,7 +25,7 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <p>{this.state.data}</p>
+        <div>{this.state.data}</div>
       </div>
     )
   }
