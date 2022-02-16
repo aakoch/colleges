@@ -1,15 +1,18 @@
-import College from "./College";
+import ReactDOM from 'react-dom'
+import CollegesTable from "./CollegesTable";
 
-async function Colleges(props) {
-  console.log('props=', props)
-  const colleges = props.data.map(college => <College data={college}></College>);
+function Colleges() {
+  fetch("/colleges")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log('data=', data)
+      ReactDOM.render(
+        <CollegesTable data={data} />,
+        document.getElementById("colleges-table")
+      );
+    });
 
-  return (
-    <div className="App">
-      {colleges}
-      <College name="test"></College>
-    </div>
-  );
+  return <div id="colleges-table"></div>;
 }
 
 export default Colleges;
