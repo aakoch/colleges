@@ -1,5 +1,5 @@
 import "./App.css";
-import Colleges from "./components/Colleges";
+import Colleges from "./components/Colleges.js";
 
 function App() {
   return <Colleges />

@@ -1,18 +1,16 @@
+import { useState } from 'react';
 import ReactDOM from 'react-dom'
 import CollegesTable from "./CollegesTable";
 
 function Colleges() {
+  const [colleges, setColleges] = useState([])
   fetch("/colleges")
     .then((res) => res.json())
     .then((data) => {
-      console.log('data=', data)
-      ReactDOM.render(
-        <CollegesTable data={data} />,
-        document.getElementById("colleges-table")
-      );
+      setColleges(data)
     });
 
-  return <div id="colleges-table"></div>;
+  return <CollegesTable data={colleges}>Loading...</CollegesTable>
 }
 
 export default Colleges;

@@ -9,7 +9,7 @@ const client = new Client({
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
-  port: 5432,
+  port: 54321,
 })
 client.connect(function (err) {
   if (err) throw err;
@@ -20,7 +20,7 @@ client.connect(function (err) {
 
   app.get("/colleges", (req, res) => {
 
-    client.query('SELECT * from colleges')
+    client.query('SELECT * from colleges order by name')
       .then(rs => res.json(rs.rows))
   });
 
