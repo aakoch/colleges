@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/aakoch/colleges#readme",
   "dependencies": {
-    "express": "^4.17.2",
+    "express": "^4.17.3",
     "pg": "^8.7.3"
   },
   "devDependencies": {
